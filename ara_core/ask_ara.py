@@ -13,6 +13,7 @@ response = requests.post(url, json=payload)
 # Print the AI response
 if response.status_code == 200:
     print("\nAI Response:")
-    print(response.json()["answer"])
+    print("Full server response:", response.text)
+    print("\nStandby\n" + response.json()["answer"])
 else:
     print("Error:", response.status_code, response.text)

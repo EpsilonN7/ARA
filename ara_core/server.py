@@ -17,9 +17,9 @@ def webhook():
     prompt = f"Question: {question}\n\nUse this Starfinder context: {starfinder_context}"
     print(f"Prompt to AI: {prompt}")
 
-    ai_response = f"This is an AI-generated answer to: '{question}' using Starfinder rules."
+    ai_response = f"Allright, here's what I could find commander: '{question}'"
 
     return jsonify({"answer": ai_response})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=6969)
+    app.run(host="0.0.0.0", port=6969, debug=True)
