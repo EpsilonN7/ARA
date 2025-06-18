@@ -1,6 +1,21 @@
 from flask import Flask, request, jsonify
 import os, yaml, requests
+import json
 from bs4 import BeautifulSoup
+
+# load cache from files if it exists
+cache_file = "ara_cache.json"
+if os.path.exists(cache_file):
+    with open(cache_file, "r") as f:
+        cache = json.load(f)
+else:
+    cache = {}
+
+import atexit
+@atexit.register
+def save_cache():
+    with open(cache_file, "w") as f:
+        json.dump(cache, f, indent=2)
 
 # website scrape function
 def scrape_text_from_url(url):
@@ -46,6 +61,11 @@ def webhook():
     question = request.json.get("question", "")
     print("Understood, indexing data storage...")
 
+    # --- check the cache first ---
+    if question in cache:
+        print("Ah, I already know the answer to that question.")
+        return jsonify({"answer": cache[question]})
+
     # --- Step 1: Scrape Starfinder website ---
     scraped_text = [scrape_text_from_url(url) for url in SCRAPE_URLS]
     
@@ -67,6 +87,7 @@ def webhook():
     })
 
     ai_text = ai_response.json().get("response", "")
+    cache[question] = ai_text
     return jsonify({"answer": ai_text})
 
 if __name__ == "__main__":
