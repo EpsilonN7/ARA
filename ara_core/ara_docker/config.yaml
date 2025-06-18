@@ -2,3 +2,10 @@ model: llama3.2:1b
 ai_host: http://ollama:11434
 port: 6969
 sources:
+  - https://www.aonsrd.com/Default.aspx
+  - https://www.aonsrd.com/Afflictions.aspx
+  - https://www.aonsrd.com/Corruptions.aspx?ItemName=All
+  - https://www.aonsrd.com/Afflictions.aspx?Category=Curse
+  - https://www.aonsrd.com/Afflictions.aspx?Category=Disease
+  - https://www.aonsrd.com/Afflictions.aspx?Category=Drug
+  - https://www.aonsrd.com/Afflictions.aspx?Category=Poison
