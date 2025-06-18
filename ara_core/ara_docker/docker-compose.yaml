@@ -19,6 +19,3 @@ services:
       - "11434:11434"
     volumes:
       - ollama_models:/root/.ollama  # persistent model storage
-
-volumes:
-  ollama_models:
