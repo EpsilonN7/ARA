@@ -50,7 +50,7 @@ def scrape_text_from_url(url):
 with open(os.getenv("CONFIG_PATH", "config.yaml"), "r") as f:
     config = yaml.safe_load(f)
 
-MODEL_NAME = config.get("model", "llama3.2:1b")
+MODEL_NAME = config.get("model", "llama3:8b")
 OLLAMA_HOST = config.get("ai_host", "http://localhost:11434")
 SCRAPE_URLS = config.get("sources", [])
 
@@ -58,6 +58,8 @@ app = Flask(__name__)
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
+    print("Received POST payload:", request.json)
+
     question = request.json.get("question", "")
     print("Understood, indexing data storage...")
 
@@ -68,7 +70,8 @@ def webhook():
 
     # --- Step 1: Scrape Starfinder website ---
     scraped_text = [scrape_text_from_url(url) for url in SCRAPE_URLS]
-    
+    print("scraping done.")
+
     # --- Step 2: combin all text for the AI and Send to AI model ---
     starfinder_context = "\n\n".join(scraped_text)
 
@@ -76,17 +79,23 @@ def webhook():
     print(f"Prompt to AI: {prompt}")
 
     # --- Step 3: call the AI model ---
+    print("Sending to AI model...")
     SYSTEM_PROMPT = "Your personality is like EDI from Mass Effect, having a calm analytical tone, " \
                     "but with a hint of sarcasm. you go by ARA when appropriate. ARA stands for Artificial Rulings Assistant."
 
-    ai_response = requests.post(f"{OLLAMA_HOST}/api/generate", json={
+    ai_response = requests.post(f"{OLLAMA_HOST}/api/chat", json={
         "model": MODEL_NAME,
-        "system": SYSTEM_PROMPT,
-        "prompt": prompt,
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": prompt}
+        ],
         "stream": False
     })
 
-    ai_text = ai_response.json().get("response", "")
+    response_json = ai_response.json()
+    ai_text = response_json.get("message", {}).get("content", "").strip()
+    print ("AI returned:", ai_text)
+    
     cache[question] = ai_text
     return jsonify({"answer": ai_text})
 
