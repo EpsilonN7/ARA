@@ -10,6 +10,9 @@ COPY server.py .
 # Install Flask and requests
 RUN pip install flask requests
 
+# install pyyaml for YAML support, and beautifulsoup4 for HTML parsing
+RUN pip install pyyaml beautifulsoup4
+
 # Expose the port your app runs on
 EXPOSE 6969
 
