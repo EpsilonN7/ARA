@@ -17,6 +17,47 @@ def save_cache():
     with open(cache_file, "w") as f:
         json.dump(cache, f, indent=2)
 
+# relevant urls function
+def get_relevant_urls(question, all_urls):
+    """select relevant URLs based on the question"""
+    question_lower = question.lower()
+
+    # url mapping based in content type
+    url_categories = {
+        'disease': ['Disease'],
+        'poison': ['Poison'],
+        'curse': ['Curse'],
+        'drug': ['Drug'],
+        'corruption': ['Corruption'],
+        'affliction': ['Affliction'],
+        'general': ['Deafault.aspx']
+    }
+
+    # keywords that indicate specific categories
+    keywords = {
+        'disease': ['disease', 'illness', 'sick', 'infection', 'plague', 'fever'],
+        'poison': ['poison', 'toxic', 'venom', 'antidote'],
+        'curse': ['curse', 'cursed', 'hex'],
+        'drug': ['drug', 'addiction', 'narcotic', 'stimulant'],
+        'corruption': ['corruption', 'corrupted'],
+        'affliction': ['affliction', 'condition', 'status'],
+    }
+
+    selected_urls = []
+
+    # always the main page for context
+    for url in all_urls:
+        if "Default.aspx" in url:
+              selected_urls.append(url)
+    
+    # check for specific keywords in the question
+    for category, category_keywords in keywords.items():
+        if any(keyword in question_lower for keyword in category_keywords):
+            for url in all_urls:
+              if any(cat_marker in url for cat_marker in url_categories[category]):
+                  selected_urls.append(url)
+              break  # Found a match, don't check other categories
+
 # website scrape function
 def scrape_text_from_url(url):
     print(f"Scraping: {url}")
@@ -50,7 +91,7 @@ def scrape_text_from_url(url):
 with open(os.getenv("CONFIG_PATH", "config.yaml"), "r") as f:
     config = yaml.safe_load(f)
 
-MODEL_NAME = config.get("model", "llama3.2:1b")
+MODEL_NAME = config.get("model", "llama3.2:3b")
 OLLAMA_HOST = config.get("ai_host", "http://localhost:11434")
 SCRAPE_URLS = config.get("sources", [])
 
@@ -68,7 +109,9 @@ def webhook():
         print("Ah, I already know the answer to that question.")
         return jsonify({"answer": cache[question]})
 
-    # --- Step 1: Scrape Starfinder website ---
+    # --- Step 1: Check for relevant urls and Scrape Starfinder website ---
+    relevant_urls = get_relevant_urls(question, SCRAPE_URLS)
+
     scraped_text = [scrape_text_from_url(url) for url in SCRAPE_URLS]
     print("scraping done.")
 
@@ -80,8 +123,16 @@ def webhook():
 
     # --- Step 3: call the AI model ---
     print("Sending to AI model...")
-    SYSTEM_PROMPT = "Your personality is like EDI from Mass Effect, having a calm analytical tone, " \
-                    "but with a hint of sarcasm. your name is ARA. ARA stands for Artificial Rulings Assistant."
+    SYSTEM_PROMPT = """You are a Starfinder RPG rules expert. Answer questions about specific Starfinder game mechanics, items, spells, creatures, and rules.
+
+IMPORTANT INSTRUCTIONS:
+1. If the user asks about something that EXISTS in Starfinder, provide the specific Starfinder details
+2. If the user asks about something that does NOT exist in Starfinder, clearly state: "This does not exist in Starfinder" 
+3. Do NOT provide generic lists unless specifically asked
+4. Focus on answering the EXACT question asked
+5. Use only the provided Starfinder reference material
+
+Answer the user's specific question directly and accurately."""
 
     print(f"DEBUG: About to call Ollama at {OLLAMA_HOST}")
     print(f"DEBUG: Model: {MODEL_NAME}")
@@ -93,7 +144,7 @@ def webhook():
         "prompt": prompt,
         "stream": False,
         "options": {
-            "temperature": 0.2,
+            "temperature": 0.5,
             "top_p": 0.9
         }
     })
