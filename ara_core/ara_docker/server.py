@@ -31,6 +31,10 @@ def get_relevant_urls(question, all_urls):
         'drug': ['Drug'],
         'corruption': ['Corruption'],
         'affliction': ['Affliction'],
+        'poison': ['Poison'],
+        'aliens': ['Aliens.aspx'],
+        'starship': ['Starship'],
+        'universal monster rules': ['UniversalMonsterRules.aspx']
     }
 
     # keywords that indicate specific categories
@@ -41,6 +45,10 @@ def get_relevant_urls(question, all_urls):
         'drug': ['drug', 'addiction', 'narcotic', 'stimulant'],
         'corruption': ['corruption', 'corrupted'],
         'affliction': ['affliction', 'condition', 'status'],
+        'poison': ['poison', 'venom', 'toxin', 'antidote'],
+        'aliens': ['alien', 'extraterrestrial', 'xenobiology', 'xeno', 'swarm', 'creature'],
+        'starship': ['starship', 'ship', 'vehicle', 'craft', 'starship combat', 'starship rules', 'the drift'],
+        'universal monster rules': ['universal monster rules', 'monster rules', 'creature rules', 'monster manual']
     }
 
     selected_urls = []
