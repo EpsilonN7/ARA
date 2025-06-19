@@ -24,13 +24,13 @@ def get_relevant_urls(question, all_urls):
 
     # url mapping based in content type
     url_categories = {
+        'general': ['Deafault.aspx'],
         'disease': ['Disease'],
         'poison': ['Poison'],
         'curse': ['Curse'],
         'drug': ['Drug'],
         'corruption': ['Corruption'],
         'affliction': ['Affliction'],
-        'general': ['Deafault.aspx']
     }
 
     # keywords that indicate specific categories
@@ -56,7 +56,15 @@ def get_relevant_urls(question, all_urls):
             for url in all_urls:
               if any(cat_marker in url for cat_marker in url_categories[category]):
                   selected_urls.append(url)
-              break  # Found a match, don't check other categories
+            break  # Found a match, don't check other categories
+
+    # If no specific category found, use general afflictions
+    if len(selected_urls) == 1:  # Only has Default.aspx
+        for url in all_urls:
+            if 'Afflictions.aspx' in url and 'Category=' not in url:
+                selected_urls.append(url)
+    
+    return selected_urls
 
 # website scrape function
 def scrape_text_from_url(url):
@@ -112,7 +120,7 @@ def webhook():
     # --- Step 1: Check for relevant urls and Scrape Starfinder website ---
     relevant_urls = get_relevant_urls(question, SCRAPE_URLS)
 
-    scraped_text = [scrape_text_from_url(url) for url in SCRAPE_URLS]
+    scraped_text = [scrape_text_from_url(url) for url in relevant_urls]
     print("scraping done.")
 
     # --- Step 2: combine all text for the AI and Send to AI model ---
