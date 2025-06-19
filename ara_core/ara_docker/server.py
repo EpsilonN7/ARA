@@ -134,7 +134,13 @@ def webhook():
     # --- Step 2: combine all text for the AI and Send to AI model ---
     starfinder_context = "\n\n".join(scraped_text)
 
-    prompt = f"Question: {question}\n\nUse this Starfinder context: {starfinder_context}"
+    try:
+        with open("glossary.txt", "r") as f:
+            glossary = f.read()
+    except:
+        glossary = ""
+
+    prompt = f"{glossary} Question: {question}\n\nUse this Starfinder context: {starfinder_context}"
     print(f"Prompt to AI: {prompt}")
 
     # --- Step 3: call the AI model ---

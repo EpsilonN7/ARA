@@ -1,0 +1,12 @@
+STARFINDER GAME TERMS:
+
+CR (Challenge Rating): Numeric rating indicating encounter difficulty
+DC (Difficulty Class): Target number for dice rolls
+EAC (Energy Armor Class): Defense against energy attacks
+KAC (Kinetic Armor Class): Defense against physical attacks
+BAB (Base Attack Bonus): Combat skill modifier
+SP (Spell Points): Resource for casting spells
+RP (Resolve Points): Hero points for special abilities
+Stamina Points: Temporary HP that recovers with rest
+UPBs: Universal Polymer Base crafting currency
+d20: 20-sided die used for most rolls
