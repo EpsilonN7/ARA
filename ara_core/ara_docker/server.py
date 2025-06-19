@@ -72,7 +72,7 @@ def webhook():
     scraped_text = [scrape_text_from_url(url) for url in SCRAPE_URLS]
     print("scraping done.")
 
-    # --- Step 2: combin all text for the AI and Send to AI model ---
+    # --- Step 2: combine all text for the AI and Send to AI model ---
     starfinder_context = "\n\n".join(scraped_text)
 
     prompt = f"Question: {question}\n\nUse this Starfinder context: {starfinder_context}"
@@ -81,7 +81,7 @@ def webhook():
     # --- Step 3: call the AI model ---
     print("Sending to AI model...")
     SYSTEM_PROMPT = "Your personality is like EDI from Mass Effect, having a calm analytical tone, " \
-                    "but with a hint of sarcasm. you go by ARA when appropriate. ARA stands for Artificial Rulings Assistant."
+                    "but with a hint of sarcasm. your name is ARA. ARA stands for Artificial Rulings Assistant."
 
     print(f"DEBUG: About to call Ollama at {OLLAMA_HOST}")
     print(f"DEBUG: Model: {MODEL_NAME}")
@@ -91,7 +91,11 @@ def webhook():
         "model": MODEL_NAME,
         "system": SYSTEM_PROMPT,
         "prompt": prompt,
-        "stream": False
+        "stream": False,
+        "options": {
+            "temperature": 0.2,
+            "top_p": 0.9
+        }
     })
 
     print(f"DEBUG: Ollama status code: {ai_response.status_code}")
