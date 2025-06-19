@@ -50,7 +50,7 @@ def scrape_text_from_url(url):
 with open(os.getenv("CONFIG_PATH", "config.yaml"), "r") as f:
     config = yaml.safe_load(f)
 
-MODEL_NAME = config.get("model", "llama3:8b")
+MODEL_NAME = config.get("model", "llama3.2:1b")
 OLLAMA_HOST = config.get("ai_host", "http://localhost:11434")
 SCRAPE_URLS = config.get("sources", [])
 
@@ -83,19 +83,24 @@ def webhook():
     SYSTEM_PROMPT = "Your personality is like EDI from Mass Effect, having a calm analytical tone, " \
                     "but with a hint of sarcasm. you go by ARA when appropriate. ARA stands for Artificial Rulings Assistant."
 
-    ai_response = requests.post(f"{OLLAMA_HOST}/api/chat", json={
+    print(f"DEBUG: About to call Ollama at {OLLAMA_HOST}")
+    print(f"DEBUG: Model: {MODEL_NAME}")
+    print(f"DEBUG: Prompt length: {len(prompt)}")
+
+    ai_response = requests.post(f"{OLLAMA_HOST}/api/generate", json={
         "model": MODEL_NAME,
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": prompt}
-        ],
+        "system": SYSTEM_PROMPT,
+        "prompt": prompt,
         "stream": False
     })
 
+    print(f"DEBUG: Ollama status code: {ai_response.status_code}")
+    print(f"DEBUG: Ollama response: {ai_response.text}")
+
     response_json = ai_response.json()
-    ai_text = response_json.get("message", {}).get("content", "").strip()
+    ai_text = response_json.get("response", "").strip()
     print ("AI returned:", ai_text)
-    
+
     cache[question] = ai_text
     return jsonify({"answer": ai_text})
 

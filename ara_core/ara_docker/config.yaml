@@ -1,4 +1,4 @@
-model: llama3:8b
+model: llama3.2:1b
 ai_host: http://ollama:11434
 port: 6969
 sources:
