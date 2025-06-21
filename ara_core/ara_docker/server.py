@@ -59,11 +59,15 @@ def get_relevant_urls(question, all_urls):
     
     # check for specific keywords in the question
     for category, keyword_list in keywords.items():
+        print(f"DEBUG: Checking category '{category}' with keywords: {keyword_list}")
         if any(keyword in question_lower for keyword in keyword_list):
+            print(f"DEBUG: MATCHED category '{category}'")
             for url in all_urls:
               if any(cat_marker in url for cat_marker in url_categories[category]):
-                  selected_urls.append(url)
-            break  # Found a match, don't check other categories
+                  print(f"DEBUG: Adding URL: {url}")
+                  selected_urls.append(url) 
+        else:
+            print(f"DEBUG: No match for category '{category}'")
 
     # If no specific category found, use general URL
     if len(selected_urls) == 1:  # Only has Default.aspx
@@ -71,6 +75,7 @@ def get_relevant_urls(question, all_urls):
             if 'Default.aspx' in url and 'Category=' not in url:
                 selected_urls.append(url)
     
+    print(f"DEBUG: Final selected URLs: {selected_urls}")
     return selected_urls
 
 # website scrape function

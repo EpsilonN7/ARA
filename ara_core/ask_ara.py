@@ -1,7 +1,7 @@
 import requests
 
 # URL of your local webhook server
-url = "http://localhost:6969/webhook"
+url = "http://localhost:6749/webhook"
 
 # Ask the user a question
 question = input("Hello commander, what is your question?: ")
