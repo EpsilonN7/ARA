@@ -144,7 +144,8 @@ def webhook():
     except:
         glossary = ""
 
-    prompt = f"{glossary} Question: {question}\n\nUse this Starfinder context: {starfinder_context}"
+    prompt = f"{glossary} Question: {question}\n\nUse this Starfinder context to answer the question. \
+    focus on general rules and definitions rather than specific examples: {starfinder_context}"
     print(f"Prompt to AI: {prompt}")
 
     # --- Step 3: call the AI model ---
