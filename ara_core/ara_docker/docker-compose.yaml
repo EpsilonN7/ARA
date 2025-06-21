@@ -18,6 +18,14 @@ services:
       - "11434:11434"
     volumes:
       - ollama_models:/root/.ollama  # persistent model storage
-
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+    environment:
+      - OLLAMA_NUM_PARALLEL=2
+      - OLLAMA_MAX_LOADED_MODELS=1
+      - NVIDIA_VISIBLE_DEVICES=all
+    runtime: nvidia
 volumes:
   ollama_models:
