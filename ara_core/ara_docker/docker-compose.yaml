@@ -4,7 +4,7 @@ services:
     build:
       context: .
     ports:
-      - "6969:6969"
+      - "6749:6749"
     depends_on:
       - ollama
     volumes:
