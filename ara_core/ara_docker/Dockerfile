@@ -14,7 +14,7 @@ RUN pip install flask requests
 RUN pip install pyyaml beautifulsoup4
 
 # Expose the port your app runs on
-EXPOSE 6969
+EXPOSE 6749
 
 # Command to run your Flask app
 CMD ["python", "server.py"]

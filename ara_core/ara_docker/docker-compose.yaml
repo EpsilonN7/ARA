@@ -4,7 +4,7 @@ services:
     build:
       context: .
     ports:
-      - "6969:6969"
+      - "6749:6749"
     depends_on:
       - ollama
     volumes:
@@ -27,8 +27,11 @@ services:
       - OLLAMA_MAX_LOADED_MODELS=1
       - NVIDIA_VISIBLE_DEVICES=all
     runtime: nvidia
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> mod-003
 volumes:
   ollama_models:

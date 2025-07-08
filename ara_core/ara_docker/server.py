@@ -24,14 +24,13 @@ def get_relevant_urls(question, all_urls):
 
     # url mapping based in content type
     url_categories = {
-        'general': ['Deafault.aspx'],
+        'general': ['Default.aspx'],
         'disease': ['Disease'],
         'poison': ['Poison'],
         'curse': ['Curse'],
         'drug': ['Drug'],
         'corruption': ['Corruption'],
         'affliction': ['Affliction'],
-        'poison': ['Poison'],
         'aliens': ['Aliens.aspx'],
         'starship': ['Starship'],
         'universal monster rules': ['UniversalMonsterRules.aspx']
@@ -39,15 +38,15 @@ def get_relevant_urls(question, all_urls):
 
     # keywords that indicate specific categories
     keywords = {
+        'general': ['rules', 'books', 'mechanics', 'gameplay', 'combat', 'actions', 'abilities', 'skills', 'equipment'],
         'disease': ['disease', 'illness', 'sick', 'infection', 'plague', 'fever'],
-        'poison': ['poison', 'toxic', 'venom', 'antidote'],
-        'curse': ['curse', 'cursed', 'hex'],
-        'drug': ['drug', 'addiction', 'narcotic', 'stimulant'],
+        'poison': ['poison', 'poisons', 'venom', 'toxin', 'antidote'],
+        'curse': ['curse', 'curses', 'cursed', 'hex'],
+        'drug': ['drug', 'drugs', 'addiction', 'narcotic', 'stimulant'],
         'corruption': ['corruption', 'corrupted'],
-        'affliction': ['affliction', 'condition', 'status'],
-        'poison': ['poison', 'venom', 'toxin', 'antidote'],
-        'aliens': ['alien', 'extraterrestrial', 'xenobiology', 'xeno', 'swarm', 'creature'],
-        'starship': ['starship', 'ship', 'vehicle', 'craft', 'starship combat', 'starship rules', 'the drift'],
+        'affliction': ['affliction', 'afflictions', 'condition', 'status'],
+        'aliens': ['alien', 'aliens', 'extraterrestrial', 'xenobiology', 'xeno', 'swarm', 'creature'],
+        'starship': ['starship', 'starships', 'ship', 'vehicle', 'craft', 'starship combat', 'starship rules', 'the drift'],
         'universal monster rules': ['universal monster rules', 'monster rules', 'creature rules', 'monster manual']
     }
 
@@ -59,19 +58,24 @@ def get_relevant_urls(question, all_urls):
               selected_urls.append(url)
     
     # check for specific keywords in the question
-    for category, category_keywords in keywords.items():
-        if any(keyword in question_lower for keyword in category_keywords):
+    for category, keyword_list in keywords.items():
+        print(f"DEBUG: Checking category '{category}' with keywords: {keyword_list}")
+        if any(keyword in question_lower for keyword in keyword_list):
+            print(f"DEBUG: MATCHED category '{category}'")
             for url in all_urls:
               if any(cat_marker in url for cat_marker in url_categories[category]):
-                  selected_urls.append(url)
-            break  # Found a match, don't check other categories
+                  print(f"DEBUG: Adding URL: {url}")
+                  selected_urls.append(url) 
+        else:
+            print(f"DEBUG: No match for category '{category}'")
 
-    # If no specific category found, use general afflictions
+    # If no specific category found, use general URL
     if len(selected_urls) == 1:  # Only has Default.aspx
         for url in all_urls:
-            if 'Afflictions.aspx' in url and 'Category=' not in url:
+            if 'Default.aspx' in url and 'Category=' not in url:
                 selected_urls.append(url)
     
+    print(f"DEBUG: Final selected URLs: {selected_urls}")
     return selected_urls
 
 # website scrape function
@@ -83,6 +87,20 @@ def scrape_text_from_url(url):
 
         # Try a set of common main content tags
         selectors = [
+            {"name": "div", "id": "main"},
+            {"name": "div", "id": "main-wrapper"},
+            {"name": "div", "class_": "main"},
+            {"name": "div", "class_": "main-wrapper"},
+            {"name": "div", "id": "page"},
+            {"name": "div", "class_": "page"},
+            {"name": "span", "id": "ct100_MainContent_MainNewsFeed"},
+            {"name": "span", "id": "ct100_MainContent_Body"},
+            {"name": "span", "id": "ct100_MainContent_Links:"},
+            {"name": "table", "id": "ct100_MainContent_DataListAfflictions"},
+            {"name": "table", "id": "ct100_MainContent_DataListCorruptions"},
+            {"name": "table", "id": "ct100_MainContent_GridViewAliens"},
+            {"name": "table", "id": "ct100_MainContent_DataListRulesAll"},
+            # Generic
             {"name": "main"},
             {"name": "article"},
             {"name": "div", "id": "content"},
@@ -140,7 +158,8 @@ def webhook():
     except:
         glossary = ""
 
-    prompt = f"{glossary} Question: {question}\n\nUse this Starfinder context: {starfinder_context}"
+    prompt = f"{glossary} Question: {question}\n\nUse this Starfinder context to answer the question. \
+    focus on general rules and definitions rather than specific examples: {starfinder_context}"
     print(f"Prompt to AI: {prompt}")
 
     # --- Step 3: call the AI model ---
@@ -166,8 +185,8 @@ Answer the user's specific question directly and accurately."""
         "prompt": prompt,
         "stream": False,
         "options": {
-            "temperature": 0.5,
-            "top_p": 0.9
+            "temperature": 0.2,
+            "top_p": 0.7
         }
     })
 
@@ -182,5 +201,5 @@ Answer the user's specific question directly and accurately."""
     return jsonify({"answer": ai_text})
 
 if __name__ == "__main__":
-    port = config.get("port", 6969)
+    port = config.get("port", 6749)
     app.run(host="0.0.0.0", port=port, debug=True)

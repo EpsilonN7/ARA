@@ -1,6 +1,6 @@
 model: llama3.2:3b
 ai_host: http://ollama:11434
-port: 6969
+port: 6749
 sources:
   - https://www.aonsrd.com/Default.aspx
   - https://www.aonsrd.com/Afflictions.aspx
