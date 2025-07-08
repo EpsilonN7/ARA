@@ -87,6 +87,18 @@ def scrape_text_from_url(url):
 
         # Try a set of common main content tags
         selectors = [
+            {"name": "div", "id": "main"},
+            {"name": "div", "id": "main-wrapper"},
+            {"name": "div", "class_": "main"},
+            {"name": "div", "class_": "main-wrapper"},
+            {"name": "div", "id": "page"},
+            {"name": "div", "class_": "page"},
+            {"name": "span", "id": "ct100_MainContent_MainNewsFeed"},
+            {"name": "span", "id": "ct100_MainContent_Body"},
+            {"name": "span", "id": "ct100_MainContent_Links:"},
+            {"name": "table", "id": "ct100_MainContent_DataListAfflictions"},
+            {"name": "table", "id": "ct100_MainContent_DataListCorruptions"},
+            # Generic
             {"name": "main"},
             {"name": "article"},
             {"name": "div", "id": "content"},
