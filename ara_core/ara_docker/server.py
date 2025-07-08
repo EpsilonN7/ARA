@@ -98,6 +98,8 @@ def scrape_text_from_url(url):
             {"name": "span", "id": "ct100_MainContent_Links:"},
             {"name": "table", "id": "ct100_MainContent_DataListAfflictions"},
             {"name": "table", "id": "ct100_MainContent_DataListCorruptions"},
+            {"name": "table", "id": "ct100_MainContent_GridViewAliens"},
+            {"name": "table", "id": "ct100_MainContent_DataListRulesAll"},
             # Generic
             {"name": "main"},
             {"name": "article"},
